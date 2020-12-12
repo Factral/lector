@@ -22,12 +22,13 @@ exports.buildMenuTemplate = function (win) {
                             filters: [
                                 { name: 'PDF Files', extensions: ['pdf'] }
                             ]
-                        }, (filename) => {
-                            if (filename) {
+                        }).then(result => {
+                            if (result.filePaths.length == 1) {
                                 win.webContents.send('file-open',
-                                    filename.toString())
+                                    result.filePaths[0]
+                                )
                             }
-                        })
+                        }).catch(err => console.log(err))
                     }
                 },
                 {

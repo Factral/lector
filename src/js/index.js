@@ -439,7 +439,7 @@
 
         /**
          * @desc Extracts path name from the arguments and opens the file.
-         * @param {*} args 
+         * @param {*} args
          */
         _processArguments(args) {
             const argsLength = args.length;

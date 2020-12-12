@@ -22,9 +22,10 @@ function createWindow() {
         icon: './src/assets/images/logo.png',
         webPreferences: {
             plugins: true,
-            nodeIntegration: true
+            nodeIntegration: true,
+            enableRemoteModule: true,
         },
-        frame: false
+        frame: false,
     });
 
     // and load the index.html of the app.
@@ -53,7 +54,8 @@ function createWindow() {
                 parent: win,
                 modal: true,
                 webPreferences: {
-                    nodeIntegration: true
+                    nodeIntegration: true,
+                    enableRemoteModule: true,
                 },
             });
 
