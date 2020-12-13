@@ -5,9 +5,12 @@
  *  See License in the project root for license information.
  *----------------------------------------------------------------------------*/
 
-const { app, dialog } = require('electron');
+const { app, dialog, BrowserWindow } = require('electron');
 
-exports.buildMenuTemplate = function (win) {
+/**
+ * @param {BrowserWindow} win
+ */
+exports.buildMenuTemplate = (win) => {
     return [
         {
             label: 'File',
@@ -16,19 +19,23 @@ exports.buildMenuTemplate = function (win) {
                     label: 'Open...',
                     id: 'file-open',
                     accelerator: 'CmdOrCtrl+O',
-                    click() {
-                        dialog.showOpenDialog(win, {
-                            properties: ['openFile'],
-                            filters: [
-                                { name: 'PDF Files', extensions: ['pdf'] }
-                            ]
-                        }).then(result => {
+                    async click() {
+                        try {
+                            const result = await dialog.showOpenDialog(win, {
+                                properties: ['openFile'],
+                                filters: [
+                                    { name: 'PDF Files', extensions: ['pdf'] }
+                                ]
+                            });
+
                             if (result.filePaths.length == 1) {
                                 win.webContents.send('file-open',
                                     result.filePaths[0]
                                 )
                             }
-                        }).catch(err => console.log(err))
+                        } catch (error) {
+                            console.log(error)
+                        }
                     }
                 },
                 {
