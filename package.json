@@ -17,7 +17,9 @@
         "url": "https://github.com/sagargurtu/lector.git"
     },
     "dependencies": {
-        "custom-electron-titlebar": "^3.2.4"
+        "@iarna/toml": "^2.2.5",
+        "custom-electron-titlebar": "^3.2.4",
+        "electron-store": "^6.0.1"
     },
     "devDependencies": {
         "electron": "^11.0.2",

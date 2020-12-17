@@ -5,8 +5,9 @@
  *  See License in the project root for license information.
  *----------------------------------------------------------------------------*/
 
-const { app, BrowserWindow, Menu, ipcMain } = require('electron');
+const { app, dialog, BrowserWindow, Menu, ipcMain } = require('electron');
 const { buildMenuTemplate } = require('./menutemplate');
+const { getRecentDocuments, clearRecentDocuments, addRecentDocuments } = require('./recent');
 
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
@@ -31,6 +32,8 @@ function createWindow() {
         },
         frame: false,
     });
+
+    // win.webContents.openDevTools();
 
     // and load the index.html of the app.
     win.loadFile('./src/index.html');
@@ -71,6 +74,62 @@ function createWindow() {
 
         }
     };
+
+    const openFile = (doc) => {
+        win.webContents.send('file-open', doc);
+        addRecentDocuments(doc);
+        updateRecentSubmenu();
+        win.webContents.send('update-menu');
+    };
+    
+    const updateRecentSubmenu = () => {
+        const recentMenu = menu.getMenuItemById('file-open-recent');
+        const recentDocs = getRecentDocuments();
+        const submenus = recentDocs.length === 0
+            ? [{
+                label: 'Empty',
+                enabled: false,
+            }]
+            : recentDocs.map((doc) => {
+                return {
+                    label: doc,
+                    click: () => openFile(doc),
+                };
+            });
+        recentMenu.submenu.items = Menu.buildFromTemplate([
+            ...submenus,
+            {
+                type: 'separator'
+            },
+            {
+                label: 'Clear Recently Opened',
+                click: () => {
+                    clearRecentDocuments();
+                    updateRecentSubmenu();
+                    win.webContents.send('update-menu');
+                },
+            }
+        ]).items;
+    };
+
+    menu.getMenuItemById('file-open').click = async () => {
+        try {
+            const result = await dialog.showOpenDialog(win, {
+                properties: ['openFile'],
+                filters: [
+                    { name: 'PDF Files', extensions: ['pdf'] }
+                ]
+            });
+
+            if (result.filePaths.length == 1) {
+                openFile(result.filePaths[0]);
+            }
+        } catch (error) {
+            console.log(error)
+        }
+    };
+
+    updateRecentSubmenu();
 
     // Set application menu
     Menu.setApplicationMenu(menu);

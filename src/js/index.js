@@ -358,6 +358,10 @@
          *       'click' needs to be propagated (custom-electron-titlebar issue)
          */
         _setMenuItemEvents() {
+            ipcRenderer.on('update-menu', (_event, _args) => {
+                this._titleBar.updateMenu(remote.Menu.getApplicationMenu());
+            } )
+
             ipcRenderer.on('file-open', (event, args) => {
                 this._propagateClick();
                 this._openFile(args);

@@ -5,7 +5,7 @@
  *  See License in the project root for license information.
  *----------------------------------------------------------------------------*/
 
-const { app, dialog, BrowserWindow } = require('electron');
+const { BrowserWindow } = require('electron');
 
 /**
  * @param {BrowserWindow} win
@@ -19,33 +19,18 @@ exports.buildMenuTemplate = (win) => {
                     label: 'Open...',
                     id: 'file-open',
                     accelerator: 'CmdOrCtrl+O',
-                    async click() {
-                        try {
-                            const result = await dialog.showOpenDialog(win, {
-                                properties: ['openFile'],
-                                filters: [
-                                    { name: 'PDF Files', extensions: ['pdf'] }
-                                ]
-                            });
-
-                            if (result.filePaths.length == 1) {
-                                win.webContents.send('file-open',
-                                    result.filePaths[0]
-                                )
-                            }
-                        } catch (error) {
-                            console.log(error)
-                        }
-                    }
+                },
+                {
+                    label: 'Open Recent',
+                    id: 'file-open-recent',
+                    submenu: [],
                 },
                 {
                     label: 'Print...',
                     id: 'file-print',
                     accelerator: 'CmdOrCtrl+P',
                     enabled: false,
-                    click() {
-                        win.webContents.send('file-print')
-                    }
+                    click: () => win.webContents.send('file-print'),
                 },
                 {
                     type: 'separator'
@@ -54,9 +39,7 @@ exports.buildMenuTemplate = (win) => {
                     label: 'Properties...',
                     id: 'file-properties',
                     enabled: false,
-                    click() {
-                        win.webContents.send('file-properties')
-                    }
+                    click: () => win.webContents.send('file-properties'),
                 },
                 {
                     type: 'separator'
@@ -65,15 +48,11 @@ exports.buildMenuTemplate = (win) => {
                     label: 'Close',
                     id: 'file-close',
                     enabled: false,
-                    click() {
-                        win.webContents.send('file-close')
-                    }
+                    click: () => win.webContents.send('file-close'),
                 },
                 {
                     label: 'Exit',
-                    click() {
-                        app.quit()
-                    }
+                    role: 'quit',
                 }
             ]
         },
@@ -85,9 +64,7 @@ exports.buildMenuTemplate = (win) => {
                     id: 'view-fullscreen',
                     enabled: false,
                     accelerator: 'F11',
-                    click() {
-                        win.webContents.send('view-fullscreen')
-                    }
+                    click: () => win.webContents.send('view-fullscreen'),
                 }
             ]
         },
