@@ -18,10 +18,6 @@
   <img alt="Tabbed View" src="https://github.com/sagargurtu/lector/blob/master/docs/assets/screenshots/Tabbed%20View.png" width=800/>
 </p>
 
-<p align="center">
-  <img alt="Empty View" src="https://github.com/sagargurtu/lector/blob/master/docs/assets/screenshots/Empty%20View.png" width=800/>
-</p>
-
 #### Dependencies
 * <a href="https://electronjs.org/">Electron <img alt="Electron" src="https://img.shields.io/github/package-json/dependency-version/sagargurtu/lector/dev/electron.svg"/></a>
 * <a href="https://github.com/AlexTorresSk/custom-electron-titlebar">Custom Electron Titlebar <img alt="Custom Electron Titlebar" src="https://img.shields.io/github/package-json/dependency-version/sagargurtu/lector/dev/custom-electron-titlebar.svg"/></a>
@@ -29,6 +25,13 @@
 
 #### Libraries Used
 * [PDF.js](https://mozilla.github.io/pdf.js/)
+
+## Features
+* Updated pdf js to latest version
+
+* Forced dark mode in pdf js
+
+* Keeps all pdfs loaded 
 
 ## What's new?
 
