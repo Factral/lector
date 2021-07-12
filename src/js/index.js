@@ -17,17 +17,10 @@
     class Reader {
 
         constructor() {
-
-            // iframe to display
-            var CurrentIframe;
-            //
-            this._viewerElement = document.createElement('iframe');
             // Array of all path names
             this._paths = [];
             // Array of all tab elements
             this._tabs = [];
-            // array of all iframes
-            this._iframes = [];
             // Total number of buckets
             this._buckets = 1;
             // Current tab element
@@ -37,12 +30,11 @@
             // Number of tabs in one bucket
             this._computeStepTabs();
 
-
-
             // Title bar object
             this._titleBar = this._getTitleBar();
 
             this._tabContainer = document.getElementById('tabContainer');
+            this._viewerElement = document.getElementById('viewer');
             this._leftSeekElement = document.getElementById('leftSeek');
             this._rightSeekElement =
                 document.getElementById('rightSeek');
@@ -144,22 +136,12 @@
          * @param {*} pathName
          */
         _createTabElement(pathName) {
-                        
             const filename = pathName.substring(pathName.lastIndexOf('\\') + 1);
             const tabElement = document.createElement('div');
             const labelElement = document.createElement('div');
             const closeElement = document.createElement('div');
-            
-            // creates the iframe where the pdf is to be opened
-            this._viewerElement = document.createElement('iframe');
-            document.getElementById('viewContainer').appendChild(this._viewerElement);
-            this._iframes.push(this._viewerElement);
-            var frames = document.getElementsByTagName("iframe");
-
             let that = this;
 
-            this._setViewerEvents();
-            
             labelElement.innerHTML = filename;
             labelElement.setAttribute('class',
                 'file-tab-label');
@@ -185,9 +167,6 @@
                     that._viewerElement.removeAttribute('src');
                     that._toggleMenuItems(false);
                     that._toggleBackgroundInfo(true);
-                    //
-                    this.CurrentIframe =  this._iframes[this._tabs.indexOf(tabElement)];
-                    this.CurrentIframe.parentNode.removeChild(this.CurrentIframe);
                 } else if (tabElement === that._currentTab) {
                     // If current tab is to be removed
                     let newCurrentPosition = positionToRemove;
@@ -200,14 +179,10 @@
                     }
                     // Switch to new current tab
                     that._switchTab(that._tabs[newCurrentPosition]);
-                    //
-                    this.CurrentIframe =  this._iframes[this._tabs.indexOf(tabElement)];
-                    this.CurrentIframe.parentNode.removeChild(this.CurrentIframe);
                 }
                 // Remove tab from paths and tabs and update buckets
                 that._paths.splice(positionToRemove, 1);
                 that._tabs.splice(positionToRemove, 1);
-                that._iframes.splice(positionToRemove, 1);
                 that._updateBuckets();
 
                 // If atleast one tab remaining
@@ -291,21 +266,9 @@
             this._currentTab.classList.add('active');
             this._currentTab.getElementsByClassName('file-tab-close')[0]
                 .style.visibility = 'visible';
+            this._openInViewer(
+                this._paths[this._tabs.indexOf(this._currentTab)]);
         }
-
-        /**
-         * @desc Focuses the current iframe and hide the other iframes
-         */
-        _focusIframe(){
-            this._viewerElement =  this._iframes[this._tabs.indexOf(this._currentTab)];
-            frames = document.getElementsByTagName("iframe");
-                for (var i = 0; i < frames.length; ++i)
-                {
-                    frames[i].style.display = "none";
-                }
-            this._viewerElement.style.display = "";
-        }
-
 
         /**
          * @desc Switches to tabElement
@@ -317,7 +280,6 @@
                 this._updateTitle(this._paths[this._tabs.indexOf(tabElement)]);
                 this._adjustTabs();
                 this._focusCurrentTab();
-                this._focusIframe();
             }
         }
 
@@ -367,9 +329,6 @@
             this._tabContainer.append(tabElement);
             this._adjustTabs();
             this._focusCurrentTab();
-                    this._openInViewer(
-                this._paths[this._tabs.indexOf(this._currentTab)]);
-                    console.log("peepega");
         }
 
         /**
@@ -399,6 +358,10 @@
          *       'click' needs to be propagated (custom-electron-titlebar issue)
          */
         _setMenuItemEvents() {
+            ipcRenderer.on('update-menu', (_event, _args) => {
+                this._titleBar.updateMenu(remote.Menu.getApplicationMenu());
+            } )
+
             ipcRenderer.on('file-open', (event, args) => {
                 this._propagateClick();
                 this._openFile(args);
@@ -480,7 +443,7 @@
 
         /**
          * @desc Extracts path name from the arguments and opens the file.
-         * @param {*} args 
+         * @param {*} args
          */
         _processArguments(args) {
             const argsLength = args.length;
@@ -512,7 +475,7 @@
         run() {
             this._setMenuItemEvents();
             this._setSeekEvents();
-
+            this._setViewerEvents();
             this._setWindowEvents();
             this._setExternalEvents();
             this._processRemoteArguments();
