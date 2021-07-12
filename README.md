@@ -15,7 +15,7 @@
 </p>
 
 <p align="center">
-  <img alt="Tabbed View" src="https://github.com/sagargurtu/lector/blob/master/docs/assets/screenshots/Tabbed%20View.png" width=800/>
+  <img alt="Tabbed View" src="https://github.com/Factral/lector/blob/master/docs/assets/screenshots/Tabbed%20View.png" width=800/>
 </p>
 
 #### Dependencies
